@@ -185,9 +185,9 @@ def multi_experiment(name,
         # get initial positions of all agents
         for i,agent in enumerate(agents):
             if type(agent).__name__ in ["GreedyPredatorGrid"]:
-                pred_pos = tuple(state[i])
+                pred_pos = state[i]
             elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-                prey_pos[i] = tuple(state[i])
+                prey_pos[i] = state[i]
         print("pred_pos", pred_pos)
         print("prey_pos", prey_pos)
 
@@ -225,16 +225,16 @@ def multi_experiment(name,
                 next_state, reward, done, info = env.step(action, i)
                 print("next_state", next_state)
 
-        #         # update pred_pos, prey_pos, or is_swarm 
-        #         next_pos = next_state[i]
-        #         if type(agent).__name__ in ["GreedyPredatorGrid"]:
-        #             pred_pos = next_pos
-        #         elif type(agent).__name__ in ["SwarmPreyGrid"]:
-        #             # update prey_pos
-        #             prey_pos[i] = next_pos
-        #             # update is_swarm
-        #             dist = cdist(next_pos, pred_pos)
-        #             is_swarm = is_swarm or (dist < swarm_threshold)
+                # update pred_pos, prey_pos, or is_swarm 
+                next_pos = next_state[i]
+                if type(agent).__name__ in ["GreedyPredatorGrid"]:
+                    pred_pos = next_pos
+                elif type(agent).__name__ in ["SwarmPreyGrid"]:
+                    # update prey_pos
+                    prey_pos[i] = next_pos
+                    # update is_swarm
+                    dist = cdist(next_pos, pred_pos)
+                    is_swarm = is_swarm or (dist < swarm_threshold)
 
                 # Learn? Might do nothing.
                 agent.update(state, action, reward, next_state, info)
