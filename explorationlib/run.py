@@ -220,7 +220,7 @@ def multi_experiment(name,
                 #   else:
                 #       # move all prey in herdDirection 
                 #       # TODO: move other prey  
-                # else:
+                else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(action, i)
                 print("next_state", next_state)
