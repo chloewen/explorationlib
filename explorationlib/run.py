@@ -190,7 +190,7 @@ def multi_experiment(name,
     is_swarm = False
     pred_pos = None
     prey_pos_dict = dict()
-    prey_step_size = None
+    prey_step_size = 1
     
     # TODO num_prey = 4 for now, will change later
     num_prey = len(agents)-1 # we assume agents[0] is predator, all other agents are prey
