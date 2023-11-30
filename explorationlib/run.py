@@ -10,7 +10,6 @@ from explorationlib.util import save
 from tqdm.autonotebook import tqdm
 from explorationlib import local_gym
 from explorationlib import agent as agent_gym
-from scipy.spatial.distance import pdist
 
 
 
@@ -124,9 +123,6 @@ def experiment(name,
     else:
         return results
 
-def dist(posA, posB):
-    return math.sqrt((posA[0]-posB[0])**2 + (posA[1]-posB[1])**2 )
-
 def multi_experiment(name,
                      agents,
                      env,
@@ -143,6 +139,9 @@ def multi_experiment(name,
     Note: by default the experiment log gets saved to 'name' and this
     function returns None: To return the exp_data, set dump=False.
     """
+
+    def get_dist(posA, posB):
+        return math.sqrt((posA[0]-posB[0])**2 + (posA[1]-posB[1])**2)
 
     # if true, swarm around predator. If false, move with other prey
     is_swarm = False
@@ -237,7 +236,7 @@ def multi_experiment(name,
                     # update prey_pos
                     prey_pos[i] = next_pos
                     # update is_swarm
-                    dist = dist(next_pos, pred_pos)
+                    dist = get_dist(next_pos, pred_pos)
                     is_swarm = is_swarm or (dist < swarm_threshold)
 
                 # Learn? Might do nothing.
