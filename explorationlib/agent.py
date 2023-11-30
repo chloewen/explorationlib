@@ -2194,6 +2194,16 @@ class GreedyPredatorGrid(Agent2d):
         self.history = defaultdict(list)
 
 class SwarmPreyGrid(Agent2d):
+    def __init__(self, step_size=1, p_move=1.):
+        super().__init__()
+        self.p_move = p_move
+        # self.possible_actions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+
+        self.step_size = int(step_size)
+        if self.step_size < 1:
+            raise ValueError("step musst be >= 1")
+        self.reset()
+        
     def forward(self, state):
         """Step forward."""
         # Go? Or turn?
