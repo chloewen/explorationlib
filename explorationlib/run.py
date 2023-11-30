@@ -9,7 +9,7 @@ from explorationlib.util import save
 from tqdm.autonotebook import tqdm
 from explorationlib import local_gym
 from explorationlib import agent as agent_gym
-from scipy.spatial.distance import cdist
+from scipy.spatial.distance import pdist
 
 
 
