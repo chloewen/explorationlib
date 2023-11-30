@@ -170,9 +170,15 @@ def multi_experiment(name,
             prey_swarm_dict[prey_index] = closest_swarm_pos
             swarm_pos_list.remove(closest_swarm_pos)
         return prey_swarm_dict 
-    
-    
 
+    # returns True is at least 1 prey is within swarm_threshold of predator
+    def update_is_swarm(prey_pos_dict, pred_pos):
+        for prey_idx in prey_pos_dict:
+            prey_pos = prey_pos_dict[prey_idx]
+            if get_dist(prey_pos, pred_pos) < swarm_threshold:
+                return True
+        return False
+    
 
     # if true, swarm around predator. If false, move with other prey
     is_swarm = False
@@ -258,17 +264,13 @@ def multi_experiment(name,
                 next_state, reward, done, info = env.step(action, i)
                 print("next_state", next_state)
 
-                # update pred_pos, prey_pos, or is_swarm 
+                # update pred_pos, prey_pos_dict
                 next_pos = next_state[i]
                 if type(agent).__name__ in ["GreedyPredatorGrid"]:
                     pred_pos = next_pos
                 elif type(agent).__name__ in ["SwarmPreyGrid"]:
                     # update prey_pos
                     prey_pos_dict[i] = next_pos
-                    # update is_swarm
-                    dist = get_dist(next_pos, pred_pos)
-                    is_swarm = is_swarm or (dist < swarm_threshold)
-                print("is_swarm", is_swarm)
 
                 # Learn? Might do nothing.
                 agent.update(state, action, reward, next_state, info)
@@ -302,7 +304,9 @@ def multi_experiment(name,
                 if done:
                     break
             print("updated pred_pos", pred_pos)
-            print("updated prey_pos", prey_pos_dict)
+            print("updated prey_pos_dict", prey_pos_dict)
+            # update is_swarm
+            is_swarm = update_is_swarm(prey_pos_dict, pred_pos)
         # Save agent and env
         log["exp_agent"] = deepcopy(agent)
 
