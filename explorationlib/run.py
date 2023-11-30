@@ -128,7 +128,7 @@ def multi_experiment(name,
                      agents,
                      env,
                      num_steps=1,
-                     num_experiments=1,
+                     num_experiments=5, # maybe
                      seed=None,
                      split_state=False,
                      dump=True,
@@ -240,7 +240,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = random.choice([[-1,0], [1,0], [0,-1], [0.1]]) # TODO: is this how we want to do it? 
+            herd_direction = random.choice([[-1,0], [1,0], [0,-1], [0,1]]) # TODO: is this how we want to do it? 
             print("is_swarm", is_swarm)
             if is_swarm:
                 # calculate mapping from prey to swarm positions
@@ -262,11 +262,7 @@ def multi_experiment(name,
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                   if not is_swarm: 
                       action = herd_direction
-                    
                   else:
-                      # TODO: swarm around predator
-                      # create list of positions around predator 
-                      # TODO: change to acct for num_pred != 4
                       action = get_teleport_action(prey_pos_dict[i], prey_swarm_dict[i])
 
                 else:
