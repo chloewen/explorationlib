@@ -143,10 +143,41 @@ def multi_experiment(name,
     def get_dist(posA, posB):
         return math.sqrt((posA[0]-posB[0])**2 + (posA[1]-posB[1])**2)
 
+    # Returns a list of tuples of len preycount containing coordinates equidistant to predCoords by a distance of radius
+    def surround(pred_pos, prey_count, radius):
+        result = []
+
+        # Angle between each new point
+        angle_step = 2 * math.pi / prey_count
+
+        # Calculate coordinates for each point and append to result
+        for i in range(prey_count):
+            angle = i * angle_step
+            x_coord = pred_pos[0] + radius * math.floor(100 * (math.cos(angle))) / 100
+            y_coord = pred_pos[1] + radius * math.floor(100 * (math.sin(angle))) / 100
+            result.append((x_coord, y_coord))
+
+        return result
+    
+    # returns a dict mapping prey index to closest swarm position 
+    def map_prey_to_swarm(swarm_pos_list, prey_pos_dict):
+        prey_swarm_dict = dict()
+        for prey_index in prey_pos_dict: 
+            prey_pos = prey_pos_dict[prey_index]
+            dist_to_swarm = [get_dist(prey_pos, swarm_pos) for swarm_pos in swarm_pos_list]
+            closest_swarm_pos_index = dist_to_swarm.index(min(dist_to_swarm))
+            closest_swarm_pos = swarm_pos_list[closest_swarm_pos_index]
+            prey_swarm_dict[prey_index] = closest_swarm_pos
+            swarm_pos_list.remove(closest_swarm_pos)
+        return prey_swarm_dict 
+    
+    
+
+
     # if true, swarm around predator. If false, move with other prey
     is_swarm = False
     pred_pos = None
-    prey_pos = dict()
+    prey_pos_dict = dict()
     
     # TODO num_prey = 4 for now, will change later
     num_prey = len(agents)-1 # we assume agents[0] is predator, all other agents are prey
@@ -190,9 +221,9 @@ def multi_experiment(name,
             if type(agent).__name__ in ["GreedyPredatorGrid"]:
                 pred_pos = state[i]
             elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-                prey_pos[i] = state[i]
+                prey_pos_dict[i] = state[i]
         print("pred_pos", pred_pos)
-        print("prey_pos", prey_pos)
+        print("prey_pos", prey_pos_dict)
 
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
@@ -211,20 +242,22 @@ def multi_experiment(name,
                   state_ = [state[i], [
                       x for i_, x in enumerate(state) if i_ != i]]
                   action = agent(state_)
-        #         # elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-        #         #   if is_swarm: 
-        #         #       # TODO: swarm around predator
-        #         #       # create list of positions around predator 
-        #         #       # TODO: change to acct for num_pred != 4
-        #         #       target_swarm_positions = [(pred_pos[0]-swarm_radius, pred_pos[1]),(pred_pos[0]+swarm_radius, pred_pos[1]),
-        #         #                                 (pred_pos[0], pred_pos[1]-swarm_radius), (pred_pos[0], pred_pos[1]+swarm_radius)]
+                # elif type(agent).__name__ in ["SwarmPreyGrid"]: 
+                #   if is_swarm: 
+                #       # TODO: swarm around predator
+                #       # create list of positions around predator 
+                #       # TODO: change to acct for num_pred != 4
+                #       target_swarm_positions = surround(pred_pos, len(prey_pos_dict), swarm_radius)
+                #       prey_swarm_dict = map_prey_to_swarm(target_swarm_positions, prey_pos_dict)
+
                       
 
-        #         #   else:
-        #         #       # move all prey in herdDirection 
-        #         #       # TODO: move other prey  
+                #   else:
+                #       # move all prey in herdDirection 
+                #       # TODO: move other prey  
                 else:
                   action = agent(state[i])
+                  print("action", action)
                 next_state, reward, done, info = env.step(action, i)
                 print("next_state", next_state)
 
@@ -234,7 +267,7 @@ def multi_experiment(name,
                     pred_pos = next_pos
                 elif type(agent).__name__ in ["SwarmPreyGrid"]:
                     # update prey_pos
-                    prey_pos[i] = next_pos
+                    prey_pos_dict[i] = next_pos
                     # update is_swarm
                     dist = get_dist(next_pos, pred_pos)
                     is_swarm = is_swarm or (dist < swarm_threshold)
@@ -271,7 +304,7 @@ def multi_experiment(name,
                 if done:
                     break
             print("updated pred_pos", pred_pos)
-            print("updated prey_pos", prey_pos)
+            print("updated prey_pos", prey_pos_dict)
         # Save agent and env
         log["exp_agent"] = deepcopy(agent)
 
