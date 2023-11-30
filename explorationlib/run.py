@@ -228,7 +228,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = None
+            herd_direction = (1,1)
             prey_swarm_position = []
 
             for i, agent in enumerate(agents):
@@ -242,22 +242,20 @@ def multi_experiment(name,
                   state_ = [state[i], [
                       x for i_, x in enumerate(state) if i_ != i]]
                   action = agent(state_)
-                # elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-                #   if is_swarm: 
+                elif type(agent).__name__ in ["SwarmPreyGrid"]: 
+                  if not is_swarm: 
+                      action = herd_direction
+                    
+                #   else:
                 #       # TODO: swarm around predator
                 #       # create list of positions around predator 
                 #       # TODO: change to acct for num_pred != 4
                 #       target_swarm_positions = surround(pred_pos, len(prey_pos_dict), swarm_radius)
                 #       prey_swarm_dict = map_prey_to_swarm(target_swarm_positions, prey_pos_dict)
 
-                      
-
-                #   else:
-                #       # move all prey in herdDirection 
-                #       # TODO: move other prey  
                 else:
                   action = agent(state[i])
-                  print("action", action)
+                #   print("action", action)
                 next_state, reward, done, info = env.step(action, i)
                 print("next_state", next_state)
 
