@@ -266,13 +266,13 @@ def multi_experiment(name,
                   if not is_swarm: 
                       action = herd_direction
                   else:
+                      print("swarming")
+                      print("prey_pos_dict", prey_pos_dict)
+                      print("prey_swarm_dict", prey_swarm_dict)
                       action = get_teleport_action(prey_pos_dict[i], prey_swarm_dict[i])
-
                 else:
                   action = agent(state[i])
-                #   print("action", action)
                 next_state, reward, done, info = env.step(action, i)
-                print("next_state", next_state)
 
                 # update pred_pos, prey_pos_dict
                 next_pos = next_state[i]
