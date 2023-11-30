@@ -226,7 +226,7 @@ def multi_experiment(name,
                 print("next_state", next_state)
 
                 # update pred_pos, prey_pos, or is_swarm 
-                next_pos, _ = next_state
+                next_pos = next_state[i]
                 if type(agent).__name__ in ["GreedyPredatorGrid"]:
                     pred_pos = next_pos
                 elif type(agent).__name__ in ["SwarmPreyGrid"]:
