@@ -267,6 +267,7 @@ def multi_experiment(name,
                       action = herd_direction
                   else:
                       print("swarming")
+                      print("pred_pos", pred_pos)
                       print("prey_pos_dict", prey_pos_dict)
                       print("prey_swarm_dict", prey_swarm_dict)
                       action = get_teleport_action(prey_pos_dict[i], prey_swarm_dict[i])
