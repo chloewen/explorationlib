@@ -2192,3 +2192,33 @@ class GreedyPredatorGrid(Agent2d):
         self.step = 0
         self.total_distance = 0.0
         self.history = defaultdict(list)
+
+class SwarmPreyGrid(Agent2d):
+    def forward(self, state):
+        """Step forward."""
+        # Go? Or turn?
+        if self.l > self.step:
+            self.step += self.step_size
+            self.num_step += 1
+        else:
+            self.num_turn += 1
+            self.num_step = 0
+            self.l = self._l(state)
+            self.angle = self._angle(state)
+            self.step = self.step_size
+
+        # Step
+        self.total_distance += self.step
+        action = self.angle
+
+        # Log
+        self.history["agent_num_turn"].append(deepcopy(self.num_turn))
+        self.history["agent_angle"].append(deepcopy(self.angle))
+        self.history["agent_l"].append(deepcopy(self.l))
+        self.history["agent_total_l"].append(deepcopy(self.total_distance))
+        self.history["agent_step"].append(deepcopy(self.step_size))
+        self.history["agent_num_step"].append(deepcopy(self.num_step))
+        self.history["agent_action"].append(deepcopy(action))
+
+        return action
+
