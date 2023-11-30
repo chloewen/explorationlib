@@ -237,7 +237,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = random.choice([-1,0], [1,0], [0,-1], [0.1]) # TODO: is this how we want to do it? 
+            herd_direction = random.choice([[-1,0], [1,0], [0,-1], [0.1]]) # TODO: is this how we want to do it? 
             print("is_swarm", is_swarm)
 
             for i, agent in enumerate(agents):
