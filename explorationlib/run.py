@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import math
+import random 
 # import cloudpickle
 
 from copy import deepcopy
@@ -236,7 +237,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = (1,1)
+            herd_direction = random.choice([-1,0], [1,0], [0,-1], [0.1]) # TODO: is this how we want to do it? 
             print("is_swarm", is_swarm)
 
             for i, agent in enumerate(agents):
