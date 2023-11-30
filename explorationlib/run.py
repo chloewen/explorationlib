@@ -176,6 +176,8 @@ def multi_experiment(name,
         for prey_idx in prey_pos_dict:
             prey_pos = prey_pos_dict[prey_idx]
             if get_dist(prey_pos, pred_pos) < swarm_threshold:
+                print("fraud prey: ", prey_idx, "pos:" , prey_pos)
+                print("pred_pos", pred_pos)
                 return True
         return False
     
