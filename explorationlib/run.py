@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import math
 # import cloudpickle
 
 from copy import deepcopy
@@ -123,6 +124,9 @@ def experiment(name,
     else:
         return results
 
+def dist(posA, posB):
+    return math.sqrt((posA[0]-posB[0])**2 + (posA[1]-posB[1])**2 )
+
 def multi_experiment(name,
                      agents,
                      env,
@@ -233,7 +237,7 @@ def multi_experiment(name,
                     # update prey_pos
                     prey_pos[i] = next_pos
                     # update is_swarm
-                    dist = pdist(next_pos, pred_pos)
+                    dist = dist(next_pos, pred_pos)
                     is_swarm = is_swarm or (dist < swarm_threshold)
 
                 # Learn? Might do nothing.
