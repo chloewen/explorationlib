@@ -229,7 +229,6 @@ def multi_experiment(name,
         for n in range(1, num_steps):
             print("step ", n)
             herd_direction = (1,1)
-            prey_swarm_position = []
 
             for i, agent in enumerate(agents):
                 # The dead don't step
@@ -269,6 +268,7 @@ def multi_experiment(name,
                     # update is_swarm
                     dist = get_dist(next_pos, pred_pos)
                     is_swarm = is_swarm or (dist < swarm_threshold)
+                print("is_swarm", is_swarm)
 
                 # Learn? Might do nothing.
                 agent.update(state, action, reward, next_state, info)
