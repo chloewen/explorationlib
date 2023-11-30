@@ -233,7 +233,7 @@ def multi_experiment(name,
                     # update prey_pos
                     prey_pos[i] = next_pos
                     # update is_swarm
-                    dist = cdist(next_pos, pred_pos)
+                    dist = pdist(next_pos, pred_pos)
                     is_swarm = is_swarm or (dist < swarm_threshold)
 
                 # Learn? Might do nothing.
