@@ -230,6 +230,7 @@ def multi_experiment(name,
                 prey_pos_dict[i] = state[i]
         print("pred_pos", pred_pos)
         print("prey_pos", prey_pos_dict)
+        print("is_swarm", is_swarm)
 
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
