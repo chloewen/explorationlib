@@ -191,81 +191,84 @@ def multi_experiment(name,
         print("pred_pos", pred_pos)
         print("prey_pos", prey_pos)
 
-        # # Run experiment, for at most num_steps
-        # for n in range(1, num_steps):
-        #     herdDirection = None
-        #     prey_swarm_position = []
+        # Run experiment, for at most num_steps
+        for n in range(1, num_steps):
+            print("step ", n)
+            herd_direction = None
+            prey_swarm_position = []
 
-        #     for i, agent in enumerate(agents):
-        #         # The dead don't step
-        #         if i in env.dead:
-        #             continue
+            for i, agent in enumerate(agents):
+                # The dead don't step
+                if i in env.dead:
+                    continue
 
-        #         # Step the agent
-        #         if type(agent).__name__ in ["GreedyPredatorGrid"]:
-        #           # state is current agent state & other agent states
-        #           state_ = [state[i], [
-        #               x for i_, x in enumerate(state) if i_ != i]]
-        #           action = agent(state_)
-        #         # elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-        #         #   if is_swarm: 
-        #         #       # TODO: swarm around predator
-        #         #       # create list of positions around predator 
-        #         #       # TODO: change to acct for num_pred != 4
-        #         #       target_swarm_positions = [(pred_pos[0]-swarm_radius, pred_pos[1]),(pred_pos[0]+swarm_radius, pred_pos[1]),
-        #         #                                 (pred_pos[0], pred_pos[1]-swarm_radius), (pred_pos[0], pred_pos[1]+swarm_radius)]
+                # Step the agent
+                if type(agent).__name__ in ["GreedyPredatorGrid"]:
+                  # state is current agent state & other agent states
+                  state_ = [state[i], [
+                      x for i_, x in enumerate(state) if i_ != i]]
+                  action = agent(state_)
+                # elif type(agent).__name__ in ["SwarmPreyGrid"]: 
+                #   if is_swarm: 
+                #       # TODO: swarm around predator
+                #       # create list of positions around predator 
+                #       # TODO: change to acct for num_pred != 4
+                #       target_swarm_positions = [(pred_pos[0]-swarm_radius, pred_pos[1]),(pred_pos[0]+swarm_radius, pred_pos[1]),
+                #                                 (pred_pos[0], pred_pos[1]-swarm_radius), (pred_pos[0], pred_pos[1]+swarm_radius)]
                       
 
-        #         #   else:
-        #         #       # move all prey in herdDirection 
-        #         #       # TODO: move other prey  
-        #         # else:
-        #           action = agent(state[i])
-        #         next_state, reward, done, info = env.step(action, i)
+                #   else:
+                #       # move all prey in herdDirection 
+                #       # TODO: move other prey  
+                # else:
+                  action = agent(state[i])
+                next_state, reward, done, info = env.step(action, i)
+                print("next_state", next_state)
 
-        #         # update pred_pos, prey_pos, or is_swarm 
-        #         next_pos, _ = next_state
-        #         if type(agent).__name__ in ["GreedyPredatorGrid"]:
-        #             pred_pos = next_pos
-        #         elif type(agent).__name__ in ["SwarmPreyGrid"]:
-        #             # update prey_pos
-        #             prey_pos[i] = next_pos
-        #             # update is_swarm
-        #             dist = cdist(next_pos, pred_pos)
-        #             is_swarm = is_swarm or (dist < swarm_threshold)
+                # update pred_pos, prey_pos, or is_swarm 
+                next_pos, _ = next_state
+                if type(agent).__name__ in ["GreedyPredatorGrid"]:
+                    pred_pos = next_pos
+                elif type(agent).__name__ in ["SwarmPreyGrid"]:
+                    # update prey_pos
+                    prey_pos[i] = next_pos
+                    # update is_swarm
+                    dist = cdist(next_pos, pred_pos)
+                    is_swarm = is_swarm or (dist < swarm_threshold)
 
-        #         # Learn? Might do nothing.
-        #         agent.update(state, action, reward, next_state, info)
+                # Learn? Might do nothing.
+                agent.update(state, action, reward, next_state, info)
 
-        #         # Shift
-        #         state = deepcopy(next_state)
+                # Shift
+                state = deepcopy(next_state)
 
-        #         # Log step env
-        #         log["num_experiment"].append(deepcopy(k))
-        #         log["exp_step"].append(deepcopy(n))
-        #         log["exp_agent"].append(deepcopy(i))
-        #         log["exp_action"].append(deepcopy(action))
-        #         log["exp_reward"].append(deepcopy(reward))
-        #         log["exp_info"].append(deepcopy(info))
+                # Log step env
+                log["num_experiment"].append(deepcopy(k))
+                log["exp_step"].append(deepcopy(n))
+                log["exp_agent"].append(deepcopy(i))
+                log["exp_action"].append(deepcopy(action))
+                log["exp_reward"].append(deepcopy(reward))
+                log["exp_info"].append(deepcopy(info))
 
-        #         # Lod dead, if env has this
-        #         try:
-        #             log["exp_env_dead"].append(deepcopy(env.dead))
-        #         except AttributeError:
-        #             pass
+                # Lod dead, if env has this
+                try:
+                    log["exp_env_dead"].append(deepcopy(env.dead))
+                except AttributeError:
+                    pass
 
-        #         # Are there senses obs?
-        #         if split_state:
-        #             pos, obs = state
-        #             log["exp_state"].append(deepcopy(pos))
-        #             log["exp_obs"].append(deepcopy(obs))
-        #         else:
-        #             log["exp_state"].append(deepcopy(state))
+                # Are there senses obs?
+                if split_state:
+                    pos, obs = state
+                    log["exp_state"].append(deepcopy(pos))
+                    log["exp_obs"].append(deepcopy(obs))
+                else:
+                    log["exp_state"].append(deepcopy(state))
 
-        #         # ?
-        #         if done:
-        #             break
-
+                # ?
+                if done:
+                    break
+            print("updated pred_pos", pred_pos)
+            print("updated prey_pos", prey_pos)
         # Save agent and env
         log["exp_agent"] = deepcopy(agent)
 
