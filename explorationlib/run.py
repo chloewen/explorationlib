@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import cloudpickle
+# import cloudpickle
 
 from copy import deepcopy
 from collections import defaultdict
@@ -9,6 +9,8 @@ from explorationlib.util import save
 from tqdm.autonotebook import tqdm
 from explorationlib import local_gym
 from explorationlib import agent as agent_gym
+from scipy.spatial.distance import cdist
+
 
 
 def experiment(name,
@@ -129,12 +131,22 @@ def multi_experiment(name,
                      seed=None,
                      split_state=False,
                      dump=True,
-                     env_kwargs=None):
+                     env_kwargs=None,
+                     swarm_threshold=10,
+                     swarm_radius=5):
     """Run a multi-agent experiment. Targets can also be agents. 
     
     Note: by default the experiment log gets saved to 'name' and this
     function returns None: To return the exp_data, set dump=False.
     """
+
+    # if true, swarm around predator. If false, move with other prey
+    is_swarm = False
+    pred_pos = None
+    prey_pos = dict()
+    
+    # TODO num_prey = 4 for now, will change later
+    num_prey = agents-1 # we assume agents[0] is predator, all other agents are prey
 
     # Parse env
     if isinstance(env, str):
@@ -168,9 +180,22 @@ def multi_experiment(name,
         # and the world
         env.reset()
         state, reward, done, info = env.last()
+        print("state", state)
+
+        # get initial positions of all agents
+        for i,agent in enumerate(agents):
+            if type(agent).__name__ in ["GreedyPredatorGrid"]:
+                pred_pos = tuple(state[i][0])
+            elif type(agent).__name__ in ["SwarmPreyGrid"]: 
+                prey_pos[i] = tuple(state[i][0])
+        print("pred_pos", pred_pos)
+        print("prey_pos", prey_pos)
 
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
+            herdDirection = None
+            prey_swarm_position = []
+
             for i, agent in enumerate(agents):
                 # The dead don't step
                 if i in env.dead:
@@ -182,9 +207,32 @@ def multi_experiment(name,
                   state_ = [state[i], [
                       x for i_, x in enumerate(state) if i_ != i]]
                   action = agent(state_)
-                else:
+                # elif type(agent).__name__ in ["SwarmPreyGrid"]: 
+                #   if is_swarm: 
+                #       # TODO: swarm around predator
+                #       # create list of positions around predator 
+                #       # TODO: change to acct for num_pred != 4
+                #       target_swarm_positions = [(pred_pos[0]-swarm_radius, pred_pos[1]),(pred_pos[0]+swarm_radius, pred_pos[1]),
+                #                                 (pred_pos[0], pred_pos[1]-swarm_radius), (pred_pos[0], pred_pos[1]+swarm_radius)]
+                      
+
+                #   else:
+                #       # move all prey in herdDirection 
+                #       # TODO: move other prey  
+                # else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(action, i)
+
+                # update pred_pos, prey_pos, or is_swarm 
+                next_pos, _ = next_state
+                if type(agent).__name__ in ["GreedyPredatorGrid"]:
+                    pred_pos = next_pos
+                elif type(agent).__name__ in ["SwarmPreyGrid"]:
+                    # update prey_pos
+                    prey_pos[i] = next_pos
+                    # update is_swarm
+                    dist = cdist(next_pos, pred_pos)
+                    is_swarm = is_swarm or (dist < swarm_threshold)
 
                 # Learn? Might do nothing.
                 agent.update(state, action, reward, next_state, info)
