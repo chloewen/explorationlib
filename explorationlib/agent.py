@@ -2194,16 +2194,36 @@ class GreedyPredatorGrid(Agent2d):
         self.history = defaultdict(list)
 
 class SwarmPreyGrid(Agent2d):
-    def __init__(self, step_size=1, p_move=1.):
+    def __init__(self, min_length=1, scale=2, step_size=1):
         super().__init__()
-        self.p_move = p_move
-        # self.possible_actions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+        self.possible_actions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
         self.step_size = int(step_size)
         if self.step_size < 1:
             raise ValueError("step musst be >= 1")
+
+        self.min_length = int(min_length)
+        if self.min_length < 1:
+            raise ValueError("min_length must be >= 1")
+
+        self.scale = float(scale)
         self.reset()
-        
+
+    def _angle(self, state):
+        i = int(self.np_random.randint(0, len(self.possible_actions)))
+        return self.possible_actions[i]
+
+    def _l(self, state):
+        """Sample length"""
+        i = 0
+        while True and i < 10000:
+            i += 1
+            l = self.np_random.exponential(self.scale)
+            l = int(l)
+            if l > self.min_length:
+                return l
+
+
     def forward(self, state):
         """Step forward."""
         # Go? Or turn?
@@ -2231,4 +2251,18 @@ class SwarmPreyGrid(Agent2d):
         self.history["agent_action"].append(deepcopy(action))
 
         return action
+    
+    def reset(self):
+        """Reset all counters, turns, and steps"""
+
+        # Safe intial values
+        self.l = self._l(np.zeros(2))
+        self.angle = self._angle(np.zeros(2))
+
+        # Clean
+        self.num_turn = 0
+        self.num_step = 0
+        self.step = 0
+        self.total_distance = 0.0
+        self.history = defaultdict(list)
 
