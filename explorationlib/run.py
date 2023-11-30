@@ -146,7 +146,7 @@ def multi_experiment(name,
     prey_pos = dict()
     
     # TODO num_prey = 4 for now, will change later
-    num_prey = agents-1 # we assume agents[0] is predator, all other agents are prey
+    num_prey = len(agents)-1 # we assume agents[0] is predator, all other agents are prey
 
     # Parse env
     if isinstance(env, str):
