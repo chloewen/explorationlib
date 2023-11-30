@@ -190,6 +190,7 @@ def multi_experiment(name,
     is_swarm = False
     pred_pos = None
     prey_pos_dict = dict()
+    prey_step_size = None
     
     # TODO num_prey = 4 for now, will change later
     num_prey = len(agents)-1 # we assume agents[0] is predator, all other agents are prey
@@ -228,14 +229,16 @@ def multi_experiment(name,
         state, reward, done, info = env.last()
         print("state", state)
 
-        # get initial positions of all agents
+        # get initial positions of all agents, step size
         for i,agent in enumerate(agents):
             if type(agent).__name__ in ["GreedyPredatorGrid"]:
                 pred_pos = state[i]
             elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                 prey_pos_dict[i] = state[i]
+                prey_step_size = agent.step_size
         print("pred_pos", pred_pos)
         print("prey_pos", prey_pos_dict)
+        print("prey_step_size", prey_step_size)
 
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
