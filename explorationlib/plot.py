@@ -351,6 +351,7 @@ def plot_positions2d(exp_data,
                      ax=None):
     # fmt
     states_vec = exp_data[var_name]
+    print("states_vec", states_vec)
     states = [list() for _ in range(num_agents)]
 
     # defaults
