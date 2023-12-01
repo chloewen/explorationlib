@@ -2207,6 +2207,7 @@ class SwarmPreyGrid(Agent2d):
             raise ValueError("min_length must be >= 1")
 
         self.scale = float(scale)
+        self.isScared = False
         self.reset()
 
     def _angle(self, state):
