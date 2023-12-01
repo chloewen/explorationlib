@@ -229,7 +229,7 @@ def multi_experiment(name,
         # and the world
         env.reset()
         state, reward, done, info = env.last()
-        state = [np.asarray([-20,20]),np.asarray([-18,20]),np.asarray([-20,18]),np.asarray([-18,18]) ]
+        state = [np.asarray([-20,20]),np.asarray([-18,20]),np.asarray([-20,18]),np.asarray([-18,18]),np.asarray([0,0]) ] # TODO: bad
         print("state", state)
 
         # get initial positions of all agents, step size
