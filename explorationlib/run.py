@@ -253,6 +253,7 @@ def multi_experiment(name,
             if is_valid(prey_pos_dict, pred_pos): 
                 return get_action(prey_pos, new_pos)
         # if no valid moves, don't move
+        print("no valid moves")
         return [0,0]
    
 
