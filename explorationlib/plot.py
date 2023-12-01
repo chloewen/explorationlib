@@ -425,17 +425,17 @@ def plot_scatter(exp_data,
         ax = fig.add_subplot(111)
     print("states",states)
 
-    
-    for i, state in enumerate(states):
-        ax.scatter(state[:, 0],
-                state[:, 1],
-                color=colors[i],
-                label=labels[i],
-                alpha=alpha)
-    ax.set_xlim(-boundary[0], boundary[0])
-    ax.set_ylim(-boundary[1], boundary[1])
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
+    for j in range(0,len(states[0]),num_agents):
+        for i, state in enumerate(states):
+            ax.scatter(state[:, 0][j:j+1],
+                    state[:, 1][j:j+1],
+                    color=colors[i],
+                    label=labels[i],
+                    alpha=alpha)
+        ax.set_xlim(-boundary[0], boundary[0])
+        ax.set_ylim(-boundary[1], boundary[1])
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
 
     # Labels, legends, titles?
     if title is not None:
