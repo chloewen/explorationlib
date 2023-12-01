@@ -136,7 +136,7 @@ def multi_experiment(name,
                      env_kwargs=None,
                      scared_threshold=10,
                      fear_radius=5,
-                     swarm_radius=5):
+                     prey_radius=5):
     """Run a multi-agent experiment. Targets can also be agents. 
     
     Note: by default the experiment log gets saved to 'name' and this
@@ -184,7 +184,7 @@ def multi_experiment(name,
                 return True
         return False
 
-    def get_teleport_action(posStart, posTarget):
+    def get_action(posStart, posTarget):
         return [posTarget[0]-posStart[0], posTarget[1]-posStart[1]]
 
     # returns list of indices of prey within fear radius of prey pred_idx
@@ -204,15 +204,63 @@ def multi_experiment(name,
         print("action", action )
         end_position_X = pos[0] + action[0]
         end_position_Y = pos[1] + action[1]
+        # TODO: this is bad 
         if end_position_X < env_bound[0][0]: end_position_X = env_bound[0][0]
         if end_position_X > env_bound[1][0]: end_position_X = env_bound[1][0]
         if end_position_Y < env_bound[0][1]: end_position_Y = env_bound[0][1]
         if end_position_Y > env_bound[1][1]: end_position_Y = env_bound[1][1]
         return (end_position_X-pos[0], end_position_Y-pos[1])
     
+    def in_bounds(pos):
+        return (pos[0] >= env_bound[0][0] 
+                and pos[0] <= env_bound[1][0] 
+                and pos[1] >= env_bound[0][1] 
+                and pos[1] <= env_bound[1][1])
+    
+    def is_valid(prey_pos_dict, pred_pos):
+        for prey_a_idx in prey_pos_dict:
+            # check if all prey are within bounds
+            if not in_bounds(pred_pos): return False
+            # check if all prey are far enough from the predator
+            if get_dist(prey_pos_dict[prey_a_idx], pred_pos) < scared_threshold: return False
+            for prey_b_idx in prey_pos_dict: 
+            # check if all prey are far enough from each other 
+                if prey_a_idx != prey_b_idx:
+                    if get_dist(prey_pos_dict[prey_a_idx], prey_pos_dict[prey_b_idx]) < prey_radius: return False
+        return True
+    
     def get_escape_action(prey_idx, prey_pos_dict, pred_pos):
+        try_incrs = [i * math.pi/36 for i in range(36)]
         prey_pos = prey_pos_dict[prey_idx]
-        # TODO: finish
+        escape_angle = math.atan((pred_pos[1]-prey_pos[1]) / (pred_pos[0]-prey_pos[0])) + math.pi
+        r = prey_step_size*2 # TODO: this
+        for try_incr in try_incrs:
+            # try moving 5 degrees one way
+            try_angle = escape_angle + try_incr
+            print("try_angle", try_angle)
+            x_new = prey_pos[0] + r * math.floor(100 * (math.cos(try_angle))) / 100
+            y_new = prey_pos[1] + r * math.floor(100 * (math.sin(try_angle))) / 100
+            new_pos = [x_new, y_new]
+            print("new_pos", new_pos)
+            prey_pos_dict[prey_idx] = new_pos
+            
+            if is_valid(prey_pos_dict, pred_pos): 
+                print("poop 1")
+                return get_action(prey_pos, new_pos)
+            # try moving 5 degrees the opposite way
+            try_angle = escape_angle - try_incr
+            print("try_angle", try_angle)
+            x_new = prey_pos[0] + r * math.floor(100 * (math.cos(try_angle))) / 100
+            y_new = prey_pos[1] + r * math.floor(100 * (math.sin(try_angle))) / 100
+            new_pos = [x_new, y_new]
+            prey_pos_dict[prey_idx] = new_pos
+            print("new_pos", new_pos)
+            if is_valid(prey_pos_dict, pred_pos): 
+                print("poop 2")
+                return get_action(prey_pos, new_pos)
+        # if no valid moves, don't move
+        return [0,0]
+   
 
     # Parse env
     if isinstance(env, str):
@@ -269,10 +317,10 @@ def multi_experiment(name,
             print("step ", n)
             herd_direction = get_herd_direction(prey_step_size)
             # print("is_swarm", is_swarm)
-            if is_swarm:
-                # calculate mapping from prey to swarm positions
-                target_swarm_positions = surround(pred_pos, len(prey_pos_dict), swarm_radius)
-                prey_swarm_dict = map_prey_to_swarm(target_swarm_positions, prey_pos_dict)
+            # if is_swarm:
+            #     # calculate mapping from prey to swarm positions
+            #     target_swarm_positions = surround(pred_pos, len(prey_pos_dict), swarm_radius)
+            #     prey_swarm_dict = map_prey_to_swarm(target_swarm_positions, prey_pos_dict)
             
             # print stuff
             # TODO: delete after debugging
@@ -299,11 +347,12 @@ def multi_experiment(name,
                     newly_scared = get_agents_within_fear_radius(prey_pos_dict,i)
                     for scared_agent_idx in newly_scared: 
                         agents[scared_agent_idx].isScared = True
-
+                    action=get_escape_action(i, prey_pos_dict, pred_pos)
                   else:
                     # update isScared
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) < scared_threshold
-                  action=herd_direction # TODO: wrong
+                    # TODO: either move with herd or towards herd 
+                    action=herd_direction # TODO: wrong
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(bound_action(state[i],action), i)
