@@ -258,8 +258,9 @@ def multi_experiment(name,
             
             # print stuff
             # TODO: delete after debugging
-            for i, agent in enumerate(agents[:-1]): 
-                print("agent pos: ", prey_pos_dict[i], "isScared: ", agent.isScared)
+            for i, agent in enumerate(agents): 
+                if type(agent).__name__ in ["SwarmPreyGrid"]: 
+                    print("agent pos: ", prey_pos_dict[i], "isScared: ", agent.isScared)
 
 
             for i, agent in enumerate(agents):
