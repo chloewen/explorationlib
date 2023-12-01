@@ -127,6 +127,7 @@ def experiment(name,
 def multi_experiment(name,
                      agents,
                      env,
+                     env_bound=[(-1*math.inf, -1*math.inf), (math.inf, math.inf)],
                      num_steps=1,
                      num_experiments=5, # maybe
                      seed=None,
@@ -193,7 +194,23 @@ def multi_experiment(name,
             if prey_idx != scared_prey_idx and get_dist(prey_pos_dict[prey_idx], prey_pos_dict[scared_prey_idx]) < fear_radius:
                 res += [prey_idx]
         return res
+
+    def get_herd_direction(prey_step_size):
+        poss_actions = [[-1 * prey_step_size,0], [prey_step_size,0], [0,-1 * prey_step_size], [0,prey_step_size]]
+        return random.choice(poss_actions)
     
+    def bound_action(pos, action):
+        end_position_X = pos[0] + action[0]
+        end_position_Y = pos[1] + action[1]
+        if end_position_X < env_bound[0][0]: end_position_X = env_bound[0][0]
+        if end_position_X > env_bound[1][0]: end_position_X = env_bound[1][0]
+        if end_position_Y < env_bound[0][1]: end_position_Y = env_bound[0][1]
+        if end_position_Y > env_bound[1][1]: end_position_Y = env_bound[1][1]
+        return (end_position_X, end_position_Y)
+    
+    def get_escape_action(prey_idx, prey_pos_dict, pred_pos):
+        prey_pos = prey_pos_dict[prey_idx]
+        # TODO: finish
 
     # Parse env
     if isinstance(env, str):
@@ -232,7 +249,6 @@ def multi_experiment(name,
         # and the world
         env.reset()
         state, reward, done, info = env.last()
-        # state = [np.asarray([-20,20]),np.asarray([-18,20]),np.asarray([-20,18]),np.asarray([-18,18]),np.asarray([0,0]) ] # TODO: bad
         print("state", state)
 
         # get initial positions of all agents, step size
@@ -249,7 +265,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = random.choice([[-1 * prey_step_size,0], [prey_step_size,0], [0,-1 * prey_step_size], [0,prey_step_size]]) 
+            herd_direction = get_herd_direction
             # print("is_swarm", is_swarm)
             if is_swarm:
                 # calculate mapping from prey to swarm positions
@@ -285,13 +301,13 @@ def multi_experiment(name,
                   else:
                     # update isScared
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) < scared_threshold
-                  action=herd_direction
+                  action=herd_direction # TODO: wrong
 
 
 
                 else:
                   action = agent(state[i])
-                next_state, reward, done, info = env.step(action, i)
+                next_state, reward, done, info = env.step(bound_action(state[i],action), i)
 
                 # update pred_pos, prey_pos_dict
                 next_pos = next_state[i]
