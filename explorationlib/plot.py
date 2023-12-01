@@ -418,7 +418,7 @@ def plot_scatter(exp_data,
     
     for i in range(0,len(states_vec),num_agents):
         ts = i//num_agents
-        state = states_vec[i]
+        state = np.asarray(states_vec[i])
         ax.plot(state[:, 0],
                 state[:, 1],
                 color=colors[i],
