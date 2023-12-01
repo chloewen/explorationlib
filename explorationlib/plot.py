@@ -391,15 +391,17 @@ def plot_positions2d(exp_data,
 
     return ax
 
-def plot_scatter(exp_data, num_agents, boundary=(1, 1),
-                    figsize=(3, 3),
-                    color="black",
-                    alpha=1.0,
-                    label=None,
-                    title=None,
-                    competitive=True,
-                    var_name="exp_state",
-                    ax=None):
+def plot_scatter(exp_data,
+                     num_agents,
+                     boundary=(1, 1),
+                     figsize=(3, 3),
+                     colors=None,
+                     alpha=1.0,
+                     labels=None,
+                     title=None,
+                     competitive=True,
+                     var_name="exp_state",
+                     ax=None):
     # fmt
     states_vec = exp_data[var_name]
 
