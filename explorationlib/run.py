@@ -237,26 +237,20 @@ def multi_experiment(name,
         for try_incr in try_incrs:
             # try moving 5 degrees one way
             try_angle = escape_angle + try_incr
-            print("try_angle", try_angle)
             x_new = prey_pos[0] + r * math.floor(100 * (math.cos(try_angle))) / 100
             y_new = prey_pos[1] + r * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
-            print("new_pos", new_pos)
             prey_pos_dict[prey_idx] = new_pos
             
             if is_valid(prey_pos_dict, pred_pos): 
-                print("poop 1")
                 return get_action(prey_pos, new_pos)
             # try moving 5 degrees the opposite way
             try_angle = escape_angle - try_incr
-            print("try_angle", try_angle)
             x_new = prey_pos[0] + r * math.floor(100 * (math.cos(try_angle))) / 100
             y_new = prey_pos[1] + r * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
             prey_pos_dict[prey_idx] = new_pos
-            print("new_pos", new_pos)
             if is_valid(prey_pos_dict, pred_pos): 
-                print("poop 2")
                 return get_action(prey_pos, new_pos)
         # if no valid moves, don't move
         return [0,0]
