@@ -393,6 +393,7 @@ def plot_positions2d(exp_data,
 
 def plot_scatter(exp_data,
                      num_agents,
+                     ts,
                      boundary=(1, 1),
                      figsize=(3, 3),
                      colors=None,
@@ -427,8 +428,8 @@ def plot_scatter(exp_data,
 
     
     for i, state in enumerate(states):
-        ax.scatter(state[:, 0],
-                state[:, 1],
+        ax.scatter(state[:, 0][ts:ts+1],
+                state[:, 1][ts:ts+1],
                 color=colors[i],
                 label=labels[i],
                 alpha=alpha)
