@@ -267,7 +267,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = get_herd_direction
+            herd_direction = get_herd_direction(prey_step_size)
             # print("is_swarm", is_swarm)
             if is_swarm:
                 # calculate mapping from prey to swarm positions
