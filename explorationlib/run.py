@@ -200,6 +200,8 @@ def multi_experiment(name,
         return random.choice(poss_actions)
     
     def bound_action(pos, action):
+        print("pos", pos)
+        print("action", action )
         end_position_X = pos[0] + action[0]
         end_position_Y = pos[1] + action[1]
         if end_position_X < env_bound[0][0]: end_position_X = env_bound[0][0]
@@ -302,9 +304,6 @@ def multi_experiment(name,
                     # update isScared
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) < scared_threshold
                   action=herd_direction # TODO: wrong
-
-
-
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(bound_action(state[i],action), i)
