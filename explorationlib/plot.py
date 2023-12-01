@@ -404,6 +404,8 @@ def plot_scatter(exp_data,
                      ax=None):
     # fmt
     states_vec = exp_data[var_name]
+    print("states_vec", states_vec)
+    states = [list() for _ in range(num_agents)]
 
     # defaults
     if colors is None:
@@ -411,20 +413,25 @@ def plot_scatter(exp_data,
     if labels is None:
         labels = [None for _ in range(num_agents)]
 
+    # repack
+    for s in states_vec:
+        for n in range(num_agents):
+            states[n].append(s[n])
+    states = [np.vstack(state) for state in states]
+
     # Create a fig obj?
     if ax is None:
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
+    print("states",states)
+
     
-    for i in range(0,len(states_vec),num_agents):
-        ts = i//num_agents
-        state = np.asarray([pos.tolist() for pos in states_vec[i]])
-        ax.plot(state[:, 0],
+    for i, state in enumerate(states):
+        ax.scatter(state[:, 0],
                 state[:, 1],
                 color=colors[i],
                 label=labels[i],
                 alpha=alpha)
-
     ax.set_xlim(-boundary[0], boundary[0])
     ax.set_ylim(-boundary[1], boundary[1])
     ax.set_xlabel("x")
