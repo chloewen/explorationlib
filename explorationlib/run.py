@@ -186,12 +186,6 @@ def multi_experiment(name,
         return [posTarget[0]-posStart[0], posTarget[1]-posStart[1]]
     
 
-    # if true, swarm around predator. If false, move with other prey
-    
-    
-    # TODO num_prey = 4 for now, will change later
-    num_prey = len(agents)-1 # we assume agents[0] is predator, all other agents are prey
-
     # Parse env
     if isinstance(env, str):
         Env = getattr(local_gym, env)
@@ -229,7 +223,7 @@ def multi_experiment(name,
         # and the world
         env.reset()
         state, reward, done, info = env.last()
-        state = [np.asarray([-20,20]),np.asarray([-18,20]),np.asarray([-20,18]),np.asarray([-18,18]),np.asarray([0,0]) ] # TODO: bad
+        # state = [np.asarray([-20,20]),np.asarray([-18,20]),np.asarray([-20,18]),np.asarray([-18,18]),np.asarray([0,0]) ] # TODO: bad
         print("state", state)
 
         # get initial positions of all agents, step size
