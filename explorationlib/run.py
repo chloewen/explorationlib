@@ -219,7 +219,7 @@ def multi_experiment(name,
         pred_pos = None
         prey_pos_dict = dict()
         prey_step_size = 1
-        
+
         # Create an exp log
         log = defaultdict(list)
 
@@ -245,7 +245,7 @@ def multi_experiment(name,
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
-            herd_direction = random.choice([[-1 * prey_step_size,0], [prey_step_size,0], [0,-1 * prey_step_size], [0,prey_step_size]]) # TODO: is this how we want to do it? 
+            herd_direction = random.choice([[-1 * prey_step_size,0], [prey_step_size,0], [0,-1 * prey_step_size], [0,prey_step_size]]) 
             print("is_swarm", is_swarm)
             if is_swarm:
                 # calculate mapping from prey to swarm positions
