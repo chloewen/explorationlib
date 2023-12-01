@@ -284,6 +284,7 @@ def multi_experiment(name,
                   else:
                     # update isScared
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) < scared_threshold
+                  action=herd_direction
 
 
 
