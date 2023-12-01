@@ -208,7 +208,7 @@ def multi_experiment(name,
         if end_position_X > env_bound[1][0]: end_position_X = env_bound[1][0]
         if end_position_Y < env_bound[0][1]: end_position_Y = env_bound[0][1]
         if end_position_Y > env_bound[1][1]: end_position_Y = env_bound[1][1]
-        return (end_position_X, end_position_Y)
+        return (end_position_X-pos[0], end_position_Y-pos[1])
     
     def get_escape_action(prey_idx, prey_pos_dict, pred_pos):
         prey_pos = prey_pos_dict[prey_idx]
