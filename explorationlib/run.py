@@ -337,7 +337,7 @@ def multi_experiment(name,
                       x for i_, x in enumerate(state) if i_ != i]]
                   action = agent(state_)
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-                  print("prev pos", prey_pos_dict[i], "| isScared", agent.isScared)
+                  print("idx", i, "| prev pos", prey_pos_dict[i], "| isScared", agent.isScared, end=" ")
                   
                   if agent.isScared:
                     # try to jump
@@ -351,7 +351,7 @@ def multi_experiment(name,
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) <= fear_radius
                     # TODO: either move with herd or towards herd 
                     action=herd_direction # TODO: wrong
-                  print("action", action, end=" ")
+                  print("| action", action, end=" ")
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(bound_action(state[i],action), i)
