@@ -227,16 +227,15 @@ def multi_experiment(name,
                     if get_dist(prey_pos_dict[prey_a_idx], prey_pos_dict[prey_b_idx]) < prey_radius: return False
         return True
     
-    def get_escape_action(prey_idx, prey_pos_dict, pred_pos):
+    def get_valid_action(prey_idx, target_pos, prey_pos_dict, pred_pos, step_size):
         try_incrs = [i * math.pi/36 for i in range(36)]
         prey_pos = prey_pos_dict[prey_idx]
-        escape_angle = math.atan((pred_pos[1]-prey_pos[1]) / (pred_pos[0]-prey_pos[0])) + math.pi
-        r = prey_step_size*2 # TODO: this
+        escape_angle = math.atan((target_pos[1]-prey_pos[1]) / (target_pos[0]-prey_pos[0])) + math.pi
         for try_incr in try_incrs:
             # try moving 5 degrees one way
             try_angle = escape_angle + try_incr
-            x_new = prey_pos[0] + r * math.floor(100 * (math.cos(try_angle))) / 100
-            y_new = prey_pos[1] + r * math.floor(100 * (math.sin(try_angle))) / 100
+            x_new = prey_pos[0] + step_size * math.floor(100 * (math.cos(try_angle))) / 100
+            y_new = prey_pos[1] + step_size * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
             prey_pos_dict[prey_idx] = new_pos
             
@@ -244,8 +243,8 @@ def multi_experiment(name,
                 return get_action(prey_pos, new_pos)
             # try moving 5 degrees the opposite way
             try_angle = escape_angle - try_incr
-            x_new = prey_pos[0] + r * math.floor(100 * (math.cos(try_angle))) / 100
-            y_new = prey_pos[1] + r * math.floor(100 * (math.sin(try_angle))) / 100
+            x_new = prey_pos[0] + step_size * math.floor(100 * (math.cos(try_angle))) / 100
+            y_new = prey_pos[1] + step_size * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
             prey_pos_dict[prey_idx] = new_pos
             if is_valid(prey_pos_dict, pred_pos): 
@@ -312,19 +311,6 @@ def multi_experiment(name,
             print("env.dead", env.dead)
             print("pred_pos", pred_pos)
             print("swarm prey")
-            
-            # print("is_swarm", is_swarm)
-            # if is_swarm:
-            #     # calculate mapping from prey to swarm positions
-            #     target_swarm_positions = surround(pred_pos, len(prey_pos_dict), swarm_radius)
-            #     prey_swarm_dict = map_prey_to_swarm(target_swarm_positions, prey_pos_dict)
-            
-            # print stuff
-            # TODO: delete after debugging
-            # for i, agent in enumerate(agents): 
-            #     if type(agent).__name__ in ["SwarmPreyGrid"]: 
-            #         print("agent pos", prey_pos_dict[i], "| isScared", agent.isScared)
-
 
             for i, agent in enumerate(agents):
                 # The dead don't step
@@ -340,20 +326,17 @@ def multi_experiment(name,
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                   print("idx", i, "| prev pos", prey_pos_dict[i], "| isScared", agent.isScared, end=" ")
                   if agent.isScared:
-                    # try to jump
                     # make other agents around you scared 
                     newly_scared = get_agents_within_fear_radius(prey_pos_dict,i)
                     for scared_agent_idx in newly_scared: 
                         agents[scared_agent_idx].isScared = True
-                    action=get_escape_action(i, prey_pos_dict, pred_pos)
+                    # try to move away from the predator fast 
+                    action = get_valid_action(i, prey_pos_dict, pred_pos, prey_step_size * 2)
                   else:
-                    # update isScared
-                    agent.isScared = get_dist(prey_pos_dict[i], pred_pos) <= fear_radius
-                    # TODO: either move with herd or towards herd 
-                    if in_bounds(get_pos_from_action(prey_pos_dict[i],herd_direction)):
-                        action=herd_direction # TODO: wrong
-                    else:
-                        action=get_escape_action(i,prey_pos_dict, pred_pos)
+                    # try to move with the herd
+                    herd_final_pos = get_pos_from_action(prey_pos_dict[i], herd_direction)
+                    action = get_valid_action(i, prey_pos_dict, herd_final_pos, prey_step_size)
+                    # TODO: state where prey aren't together
                   print("| action", action, end=" ")
 
                   # update isScared
