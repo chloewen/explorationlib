@@ -200,8 +200,6 @@ def multi_experiment(name,
         return random.choice(poss_actions)
     
     def bound_action(pos, action):
-        print("pos", pos)
-        print("action", action )
         end_position_X = pos[0] + action[0]
         end_position_Y = pos[1] + action[1]
         # TODO: this is bad 
