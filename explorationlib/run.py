@@ -346,7 +346,7 @@ def multi_experiment(name,
                     action=get_escape_action(i, prey_pos_dict, pred_pos)
                   else:
                     # update isScared
-                    agent.isScared = get_dist(prey_pos_dict[i], pred_pos) < scared_threshold
+                    agent.isScared = get_dist(prey_pos_dict[i], pred_pos) <= fear_radius
                     # TODO: either move with herd or towards herd 
                     action=herd_direction # TODO: wrong
                 else:
