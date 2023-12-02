@@ -228,7 +228,8 @@ def multi_experiment(name,
         return True
     
     def get_valid_action(prey_idx, target_pos, prey_pos_dict, pred_pos, step_size):
-        n = 360
+        print("| target_pos", target_pos, end=" ")
+        n = 180
         try_incrs = [i * math.pi/n for i in range(n)]
         prey_pos = prey_pos_dict[prey_idx]
         epsilon = 10 ** (-17)
@@ -345,27 +346,27 @@ def multi_experiment(name,
                       x for i_, x in enumerate(state) if i_ != i]]
                   action = agent(state_)
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
-                  print("idx", i, "| prev pos", prey_pos_dict[i], "| isScared", agent.isScared, end=" ")
+                  prey_pos = prey_pos_dict[i]
+                  print("idx", i, "| prev pos", prey_pos, "| isScared", agent.isScared, end=" ")
                   if agent.isScared:
                     # make other agents around you scared 
                     newly_scared = get_agents_within_fear_radius(prey_pos_dict,i)
                     for scared_agent_idx in newly_scared: 
                         agents[scared_agent_idx].isScared = True
                     # try to move away from the predator fast 
-                    action = get_valid_action(i, pred_pos, prey_pos_dict, pred_pos, prey_step_size * 2)
+                    epsilon = 10 ** (-17)
+                    x_diff = epsilon if prey_pos[0]-pred_pos[0]==0 else prey_pos[0]-pred_pos[0]
+                    y_diff = epsilon if prey_pos[1]-pred_pos[1]==0 else prey_pos[1]-pred_pos[1]
+                    opp_pred_pos = get_pos_from_action(prey_pos,[x_diff, y_diff])
+                    action = get_valid_action(i, opp_pred_pos, prey_pos_dict, pred_pos, prey_step_size * 2)
                   else:
                     if agent.isInHerd:
-                        action = get_valid_action(i, get_pos_from_action(prey_pos_dict[i], herd_direction), prey_pos_dict, pred_pos, prey_step_size)
+                        # try to move with the herd
+                        action = get_valid_action(i, get_pos_from_action(prey_pos, herd_direction), prey_pos_dict, pred_pos, prey_step_size)
                     else:
+                        # try to move towards the furthest prey from the target 
                         action = get_valid_action(i, get_pos_furthest_prey(prey_pos_dict, pred_pos), prey_pos_dict, pred_pos, prey_step_size)
-
-                    # if agent.isInHerd: 
-                    #     # try to move with the herd
-                    #     herd_final_pos = get_pos_from_action(prey_pos_dict[i], herd_direction)
-                    #     action = get_valid_action(i, herd_final_pos, prey_pos_dict, pred_pos, prey_step_size)
-                    # else: 
-                    #     # try to move towards the furthest prey from the target 
-                    #     action = get_valid_action(i, get_pos_furthest_prey(prey_pos_dict, pred_pos), prey_pos_dict, pred_pos, prey_step_size)
+             
                   print("| action", action, end=" ")
 
                   # update isScared
