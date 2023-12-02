@@ -331,11 +331,11 @@ def multi_experiment(name,
                     for scared_agent_idx in newly_scared: 
                         agents[scared_agent_idx].isScared = True
                     # try to move away from the predator fast 
-                    action = get_valid_action(i, prey_pos_dict, pred_pos, prey_step_size * 2)
+                    action = get_valid_action(i, pred_pos, prey_pos_dict, pred_pos, prey_step_size * 2)
                   else:
                     # try to move with the herd
                     herd_final_pos = get_pos_from_action(prey_pos_dict[i], herd_direction)
-                    action = get_valid_action(i, prey_pos_dict, herd_final_pos, prey_step_size)
+                    action = get_valid_action(i, herd_final_pos, prey_pos_dict, pred_pos, prey_step_size)
                     # TODO: state where prey aren't together
                   print("| action", action, end=" ")
 
