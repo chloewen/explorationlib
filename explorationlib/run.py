@@ -262,7 +262,7 @@ def multi_experiment(name,
         for prey_idx in prey_pos_dict:
             prey_pos = prey_pos_dict[prey_idx]
             if max_dist == None or get_dist(pred_pos, prey_pos) > max_dist:
-                max_dist = prey_pos
+                max_dist = get_dist(pred_pos, prey_pos)
                 best_prey_pos = prey_pos
         return best_prey_pos
     
