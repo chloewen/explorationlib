@@ -268,7 +268,7 @@ def multi_experiment(name,
     
     # returns True if the prey is within prey_radius of any other prey
     def update_is_in_herd(prey_idx, prey_pos_dict): 
-        prey_pos = prey_pos_dict
+        prey_pos = prey_pos_dict[prey_idx]
         for i in prey_pos_dict:
             if i != prey_idx and get_dist(prey_pos, prey_pos_dict[i]) <= prey_radius: return True
         return False
