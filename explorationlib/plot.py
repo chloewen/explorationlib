@@ -425,12 +425,10 @@ def plot_scatter(exp_data,
         ax = fig.add_subplot(111)
     print("ts",ts)
     print("states", states)
-    state = states[ts]
-    print("state", state)
     for i in range(num_agents):
-        agent_state = state[i]
-        print("agent_state", agent_state)
+        agent_state = states[i]
         agent_state_ts_idx = (ts+1)*num_agents
+        print("agent_state", agent_state)
         ax.scatter([agent_state[agent_state_ts_idx:agent_state_ts_idx+1][0]],
                 [agent_state[agent_state_ts_idx:agent_state_ts_idx+1][1]],
                 color=colors[i],
