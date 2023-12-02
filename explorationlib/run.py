@@ -231,7 +231,10 @@ def multi_experiment(name,
         print("prey_idx",prey_idx,"target_pos",target_pos,"prey_pos_dict",prey_pos_dict,"pred_pos",pred_pos,"step_size",step_size)
         try_incrs = [i * math.pi/36 for i in range(36)]
         prey_pos = prey_pos_dict[prey_idx]
-        escape_angle = math.atan((target_pos[1]-prey_pos[1]) / (target_pos[0]-prey_pos[0])) + math.pi
+        epsilon = 10 ** (-17)
+        y_diff = epsilon if target_pos[1]-prey_pos[1]==0 else target_pos[1]-prey_pos[1]
+        x_diff = epsilon if target_pos[0]-prey_pos[0]==0 else target_pos[0]-prey_pos[0]
+        escape_angle = math.atan(y_diff / x_diff) + math.pi
         for try_incr in try_incrs:
             # try moving 5 degrees one way
             try_angle = escape_angle + try_incr
