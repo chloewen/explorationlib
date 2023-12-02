@@ -253,6 +253,9 @@ def multi_experiment(name,
         # if no valid moves, don't move
         print("no valid moves")
         return [0,0]
+
+    def get_pos_from_action(pos, action):
+        return [pos[0]+action[0], pos[1]+action[1]]
    
 
     # Parse env
@@ -278,7 +281,7 @@ def multi_experiment(name,
 
     # !
     for k in tqdm(range(num_experiments), desc=base):
-        is_swarm = False
+        # is_swarm = False
         pred_pos = None
         prey_pos_dict = dict()
         prey_step_size = 1
@@ -336,7 +339,6 @@ def multi_experiment(name,
                   action = agent(state_)
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                   print("idx", i, "| prev pos", prey_pos_dict[i], "| isScared", agent.isScared, end=" ")
-                  
                   if agent.isScared:
                     # try to jump
                     # make other agents around you scared 
@@ -348,7 +350,10 @@ def multi_experiment(name,
                     # update isScared
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) <= fear_radius
                     # TODO: either move with herd or towards herd 
-                    action=herd_direction # TODO: wrong
+                    if in_bounds(get_pos_from_action(prey_pos_dict[i],herd_direction)):
+                        action=herd_direction # TODO: wrong
+                    else:
+                        action=get_escape_action(i,prey_pos_dict, pred_pos)
                   print("| action", action, end=" ")
 
                   # update isScared
