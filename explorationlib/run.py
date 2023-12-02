@@ -395,7 +395,7 @@ def multi_experiment(name,
             print("updated pred_pos", pred_pos)
             print("updated prey_pos_dict", prey_pos_dict)
             # update is_swarm
-            is_swarm = update_is_swarm(prey_pos_dict, pred_pos)
+            # is_swarm = update_is_swarm(prey_pos_dict, pred_pos)
         # Save agent and env
         log["exp_agent"] = deepcopy(agent)
 
