@@ -350,7 +350,10 @@ def multi_experiment(name,
                     # try to move away from the predator fast 
                     action = get_valid_action(i, pred_pos, prey_pos_dict, pred_pos, prey_step_size * 2)
                   else:
-                    action = get_valid_action(i, get_pos_from_action(prey_pos_dict[i], herd_direction), prey_pos_dict, pred_pos, prey_step_size)
+                    if agent.isInHerd:
+                        action = get_valid_action(i, get_pos_from_action(prey_pos_dict[i], herd_direction), prey_pos_dict, pred_pos, prey_step_size)
+                    else:
+                        action = get_valid_action(i, get_pos_furthest_prey(prey_pos_dict, pred_pos), prey_pos_dict, pred_pos, prey_step_size)
 
                     # if agent.isInHerd: 
                     #     # try to move with the herd
