@@ -350,6 +350,10 @@ def multi_experiment(name,
                     # TODO: either move with herd or towards herd 
                     action=herd_direction # TODO: wrong
                   print("| action", action, end=" ")
+
+                  # update isScared
+                  next_pos = [prey_pos_dict[i][0] + action[0], prey_pos_dict[i][1] + action[1]]
+                  agent.isScared = get_dist(next_pos, pred_pos) <= fear_radius
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(bound_action(state[i],action), i)
