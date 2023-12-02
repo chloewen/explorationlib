@@ -228,6 +228,7 @@ def multi_experiment(name,
         return True
     
     def get_valid_action(prey_idx, target_pos, prey_pos_dict, pred_pos, step_size):
+        print("prey_idx",prey_idx,"target_pos",target_pos,"prey_pos_dict",prey_pos_dict,"pred_pos",pred_pos,"step_size",step_size)
         try_incrs = [i * math.pi/36 for i in range(36)]
         prey_pos = prey_pos_dict[prey_idx]
         escape_angle = math.atan((target_pos[1]-prey_pos[1]) / (target_pos[0]-prey_pos[0])) + math.pi
