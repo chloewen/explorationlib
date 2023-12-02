@@ -303,14 +303,15 @@ def multi_experiment(name,
             elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                 prey_pos_dict[i] = state[i]
                 prey_step_size = agent.step_size
-        print("pred_pos", pred_pos)
-        print("prey_pos", prey_pos_dict)
-        print("prey_step_size", prey_step_size)
 
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
             print("step ", n)
             herd_direction = get_herd_direction(prey_step_size)
+            print("env.dead", env.dead)
+            print("pred_pos", pred_pos)
+            print("swarm prey")
+            
             # print("is_swarm", is_swarm)
             # if is_swarm:
             #     # calculate mapping from prey to swarm positions
@@ -319,13 +320,12 @@ def multi_experiment(name,
             
             # print stuff
             # TODO: delete after debugging
-            for i, agent in enumerate(agents): 
-                if type(agent).__name__ in ["SwarmPreyGrid"]: 
-                    print("agent pos: ", prey_pos_dict[i], "isScared: ", agent.isScared)
+            # for i, agent in enumerate(agents): 
+            #     if type(agent).__name__ in ["SwarmPreyGrid"]: 
+            #         print("agent pos", prey_pos_dict[i], "| isScared", agent.isScared)
 
 
             for i, agent in enumerate(agents):
-                print("env.dead", env.dead)
                 # The dead don't step
                 if i in env.dead:
                     continue
@@ -337,6 +337,8 @@ def multi_experiment(name,
                       x for i_, x in enumerate(state) if i_ != i]]
                   action = agent(state_)
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
+                  print("prev pos", prey_pos_dict[i], "| isScared", agent.isScared)
+                  
                   if agent.isScared:
                     # try to jump
                     # make other agents around you scared 
@@ -349,9 +351,11 @@ def multi_experiment(name,
                     agent.isScared = get_dist(prey_pos_dict[i], pred_pos) <= fear_radius
                     # TODO: either move with herd or towards herd 
                     action=herd_direction # TODO: wrong
+                  print("action", action, end=" ")
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(bound_action(state[i],action), i)
+                print("| next pos", next_state[i])
 
                 # update pred_pos, prey_pos_dict
                 next_pos = next_state[i]
@@ -392,10 +396,6 @@ def multi_experiment(name,
                 # ?
                 if done:
                     break
-            print("updated pred_pos", pred_pos)
-            print("updated prey_pos_dict", prey_pos_dict)
-            # update is_swarm
-            # is_swarm = update_is_swarm(prey_pos_dict, pred_pos)
         # Save agent and env
         log["exp_agent"] = deepcopy(agent)
 
