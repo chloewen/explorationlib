@@ -235,6 +235,7 @@ def multi_experiment(name,
         for try_incr in try_incrs:
             # try moving 5 degrees one way
             try_angle = escape_angle + try_incr
+            print("try_angle 1", try_angle)
             x_new = prey_pos[0] + step_size * math.floor(100 * (math.cos(try_angle))) / 100
             y_new = prey_pos[1] + step_size * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
@@ -244,6 +245,7 @@ def multi_experiment(name,
                 return get_action(prey_pos, new_pos)
             # try moving 5 degrees the opposite way
             try_angle = escape_angle - try_incr
+            print("try_angle 2", try_angle)
             x_new = prey_pos[0] + step_size * math.floor(100 * (math.cos(try_angle))) / 100
             y_new = prey_pos[1] + step_size * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
