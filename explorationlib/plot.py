@@ -424,7 +424,7 @@ def plot_scatter(exp_data,
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
 
-    
+    print("states", states)
     for i, state in enumerate(states):
         state_idx = ts*num_agents + 1
         ax.scatter(state[:, 0][state_idx:state_idx+1],
