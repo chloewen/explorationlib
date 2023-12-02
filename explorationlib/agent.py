@@ -2208,6 +2208,7 @@ class SwarmPreyGrid(Agent2d):
 
         self.scale = float(scale)
         self.isScared = False
+        self.isInHeard = False
         self.reset()
 
     def _angle(self, state):

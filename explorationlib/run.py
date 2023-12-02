@@ -255,7 +255,23 @@ def multi_experiment(name,
 
     def get_pos_from_action(pos, action):
         return [pos[0]+action[0], pos[1]+action[1]]
-   
+
+    def get_pos_furthest_prey(prey_pos_dict, pred_pos):
+        max_dist = None
+        best_prey_pos = None
+        for prey_idx in prey_pos_dict:
+            prey_pos = prey_pos_dict[prey_idx]
+            if max_dist == None or get_dist(pred_pos, prey_pos) > max_dist:
+                max_dist = prey_pos
+                best_prey_pos = prey_pos
+        return best_prey_pos
+    
+    # returns True if the prey is within prey_radius of any other prey
+    def update_is_in_herd(prey_idx, prey_pos_dict): 
+        prey_pos = prey_pos_dict
+        for i in prey_pos_dict:
+            if i != prey_idx and get_dist(prey_pos, prey_pos_dict[i]) <= prey_radius: return True
+        return False
 
     # Parse env
     if isinstance(env, str):
@@ -333,15 +349,21 @@ def multi_experiment(name,
                     # try to move away from the predator fast 
                     action = get_valid_action(i, pred_pos, prey_pos_dict, pred_pos, prey_step_size * 2)
                   else:
-                    # try to move with the herd
-                    herd_final_pos = get_pos_from_action(prey_pos_dict[i], herd_direction)
-                    action = get_valid_action(i, herd_final_pos, prey_pos_dict, pred_pos, prey_step_size)
-                    # TODO: state where prey aren't together
+                    if agent.isInHerd: 
+                        # try to move with the herd
+                        herd_final_pos = get_pos_from_action(prey_pos_dict[i], herd_direction)
+                        action = get_valid_action(i, herd_final_pos, prey_pos_dict, pred_pos, prey_step_size)
+                    else: 
+                        # try to move towards the furthest prey from the target 
+                        action = get_valid_action(i, get_pos_furthest_prey(prey_pos_dict, pred_pos), prey_pos_dict, pred_pos, prey_step_size)
                   print("| action", action, end=" ")
 
                   # update isScared
                   next_pos = [prey_pos_dict[i][0] + action[0], prey_pos_dict[i][1] + action[1]]
                   agent.isScared = get_dist(next_pos, pred_pos) <= fear_radius
+
+                  # update isInHerd
+                  agent.isInHerd = update_is_in_herd(i, prey_pos_dict)
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(action, i)
