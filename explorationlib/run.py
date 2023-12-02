@@ -218,7 +218,7 @@ def multi_experiment(name,
     def is_valid(prey_pos_dict, pred_pos):
         for prey_a_idx in prey_pos_dict:
             # check if all prey are within bounds
-            if not in_bounds(pred_pos): return False
+            if not in_bounds(prey_pos_dict[prey_a_idx]): return False
             # check if all prey are far enough from the predator
             if get_dist(prey_pos_dict[prey_a_idx], pred_pos) < pred_radius: return False
             for prey_b_idx in prey_pos_dict: 
