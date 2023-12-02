@@ -134,9 +134,9 @@ def multi_experiment(name,
                      split_state=False,
                      dump=True,
                      env_kwargs=None,
-                     scared_threshold=10,
                      fear_radius=5,
-                     prey_radius=5):
+                     prey_radius=5,
+                     pred_radius=10):
     """Run a multi-agent experiment. Targets can also be agents. 
     
     Note: by default the experiment log gets saved to 'name' and this
@@ -222,7 +222,7 @@ def multi_experiment(name,
             # check if all prey are within bounds
             if not in_bounds(pred_pos): return False
             # check if all prey are far enough from the predator
-            if get_dist(prey_pos_dict[prey_a_idx], pred_pos) < scared_threshold: return False
+            if get_dist(prey_pos_dict[prey_a_idx], pred_pos) < pred_radius: return False
             for prey_b_idx in prey_pos_dict: 
             # check if all prey are far enough from each other 
                 if prey_a_idx != prey_b_idx:
@@ -325,6 +325,7 @@ def multi_experiment(name,
 
 
             for i, agent in enumerate(agents):
+                print("env.dead", env.dead)
                 # The dead don't step
                 if i in env.dead:
                     continue
