@@ -356,7 +356,7 @@ def multi_experiment(name,
                   agent.isScared = get_dist(next_pos, pred_pos) <= fear_radius
                 else:
                   action = agent(state[i])
-                next_state, reward, done, info = env.step(bound_action(state[i],action), i)
+                next_state, reward, done, info = env.step(action, i)
                 print("| next pos", next_state[i])
 
                 # update pred_pos, prey_pos_dict
