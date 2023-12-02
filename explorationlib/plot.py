@@ -429,8 +429,8 @@ def plot_scatter(exp_data,
         agent_state = states[i]
         agent_state_ts_idx = (ts+1)*num_agents
         print("agent_state", agent_state)
-        ax.scatter([agent_state[agent_state_ts_idx:agent_state_ts_idx+1][0]],
-                [agent_state[agent_state_ts_idx:agent_state_ts_idx+1][1]],
+        ax.scatter([agent_state[agent_state_ts_idx][0]],
+                [agent_state[agent_state_ts_idx][1]],
                 color=colors[i],
                 label=labels[i],
                 alpha=alpha)
