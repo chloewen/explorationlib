@@ -351,7 +351,6 @@ def plot_positions2d(exp_data,
                      ax=None):
     # fmt
     states_vec = exp_data[var_name]
-    print("states_vec", states_vec)
     states = [list() for _ in range(num_agents)]
 
     # defaults
@@ -370,7 +369,6 @@ def plot_positions2d(exp_data,
     if ax is None:
         fig = plt.figure(figsize=figsize)
         ax = fig.add_subplot(111)
-    print("states",states)
     # !
     for i, state in enumerate(states):
         ax.plot(state[:, 0],
