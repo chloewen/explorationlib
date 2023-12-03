@@ -229,7 +229,7 @@ def multi_experiment(name,
     
     def get_valid_action(prey_idx, target_pos, prey_pos_dict, pred_pos, step_size):
         print("| target_pos", target_pos, end=" ")
-        n = 4
+        n = 36
         try_incrs = [i * math.pi/n for i in range(n)]
         prey_pos = prey_pos_dict[prey_idx]
         epsilon = 10 ** (-17)
