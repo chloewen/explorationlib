@@ -129,14 +129,15 @@ def multi_experiment(name,
                      env,
                      env_bound=[(-1*math.inf, -1*math.inf), (math.inf, math.inf)],
                      num_steps=1,
-                     num_experiments=5, # maybe
+                     num_experiments=5,
                      seed=None,
                      split_state=False,
                      dump=True,
                      env_kwargs=None,
                      fear_radius=5,
                      prey_radius=5,
-                     pred_radius=10):
+                     pred_radius=10,
+                     escape_speed_factor=1):
     """Run a multi-agent experiment. Targets can also be agents. 
     
     Note: by default the experiment log gets saved to 'name' and this
@@ -145,44 +146,6 @@ def multi_experiment(name,
 
     def get_dist(posA, posB):
         return math.sqrt((posA[0]-posB[0])**2 + (posA[1]-posB[1])**2)
-
-    # Returns a list of tuples of len preycount containing coordinates equidistant to predCoords by a distance of radius
-    def surround(pred_pos, prey_count, radius):
-        result = []
-
-        # Angle between each new point
-        angle_step = 2 * math.pi / prey_count
-
-        # Calculate coordinates for each point and append to result
-        for i in range(prey_count):
-            angle = i * angle_step
-            x_coord = pred_pos[0] + radius * math.floor(100 * (math.cos(angle))) / 100
-            y_coord = pred_pos[1] + radius * math.floor(100 * (math.sin(angle))) / 100
-            result.append((x_coord, y_coord))
-
-        return result
-    
-    # returns a dict mapping prey index to closest swarm position 
-    def map_prey_to_swarm(swarm_pos_list, prey_pos_dict):
-        prey_swarm_dict = dict()
-        for prey_index in prey_pos_dict: 
-            prey_pos = prey_pos_dict[prey_index]
-            dist_to_swarm = [get_dist(prey_pos, swarm_pos) for swarm_pos in swarm_pos_list]
-            closest_swarm_pos_index = dist_to_swarm.index(min(dist_to_swarm))
-            closest_swarm_pos = swarm_pos_list[closest_swarm_pos_index]
-            prey_swarm_dict[prey_index] = closest_swarm_pos
-            swarm_pos_list.remove(closest_swarm_pos)
-        return prey_swarm_dict 
-
-    # returns True is at least 1 prey is within swarm_threshold of predator
-    def update_is_swarm(prey_pos_dict, pred_pos):
-        for prey_idx in prey_pos_dict:
-            prey_pos = prey_pos_dict[prey_idx]
-            if get_dist(prey_pos, pred_pos) < scared_threshold:
-                print("fraud prey: ", prey_idx, "pos:" , prey_pos)
-                print("pred_pos", pred_pos)
-                return True
-        return False
 
     def get_action(posStart, posTarget):
         return [posTarget[0]-posStart[0], posTarget[1]-posStart[1]]
@@ -198,16 +161,6 @@ def multi_experiment(name,
     def get_herd_direction(prey_step_size):
         poss_actions = [[-1 * prey_step_size,0], [prey_step_size,0], [0,-1 * prey_step_size], [0,prey_step_size]]
         return random.choice(poss_actions)
-    
-    def bound_action(pos, action):
-        end_position_X = pos[0] + action[0]
-        end_position_Y = pos[1] + action[1]
-        # TODO: this is bad 
-        if end_position_X < env_bound[0][0]: end_position_X = env_bound[0][0]
-        if end_position_X > env_bound[1][0]: end_position_X = env_bound[1][0]
-        if end_position_Y < env_bound[0][1]: end_position_Y = env_bound[0][1]
-        if end_position_Y > env_bound[1][1]: end_position_Y = env_bound[1][1]
-        return (end_position_X-pos[0], end_position_Y-pos[1])
     
     def in_bounds(pos):
         return (pos[0] >= env_bound[0][0] 
@@ -228,7 +181,6 @@ def multi_experiment(name,
         return True
     
     def get_valid_action(prey_idx, target_pos, prey_pos_dict, pred_pos, step_size):
-        print("| target_pos", target_pos, end=" ")
         n = 36
         try_incrs = [i * math.pi/n for i in range(n)]
         prey_pos = prey_pos_dict[prey_idx]
@@ -242,7 +194,6 @@ def multi_experiment(name,
             x_new = prey_pos[0] + step_size * math.floor(100 * (math.cos(try_angle))) / 100
             y_new = prey_pos[1] + step_size * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
-            print("trying", new_pos, end=" ")
             prey_pos_dict[prey_idx] = new_pos
             
             if is_valid(prey_pos_dict, pred_pos): 
@@ -252,12 +203,10 @@ def multi_experiment(name,
             x_new = prey_pos[0] + step_size * math.floor(100 * (math.cos(try_angle))) / 100
             y_new = prey_pos[1] + step_size * math.floor(100 * (math.sin(try_angle))) / 100
             new_pos = [x_new, y_new]
-            print("trying", new_pos, end=" ")
             prey_pos_dict[prey_idx] = new_pos
             if is_valid(prey_pos_dict, pred_pos): 
                 return get_action(prey_pos, new_pos)
         # if no valid moves, don't move
-        print("no valid moves", end=" ")
         return [0,0]
 
     def get_pos_from_action(pos, action):
@@ -318,7 +267,6 @@ def multi_experiment(name,
         # and the world
         env.reset()
         state, reward, done, info = env.last()
-        print("state", state)
 
         # get initial positions of all agents, step size
         for i,agent in enumerate(agents):
@@ -330,11 +278,7 @@ def multi_experiment(name,
 
         # Run experiment, for at most num_steps
         for n in range(1, num_steps):
-            print("step ", n)
             herd_direction = get_herd_direction(prey_step_size)
-            print("env.dead", env.dead)
-            print("pred_pos", pred_pos)
-            print("swarm prey")
 
             for i, agent in enumerate(agents):
                 # The dead don't step
@@ -349,7 +293,6 @@ def multi_experiment(name,
                   action = agent(state_)
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                   prey_pos = prey_pos_dict[i]
-                  print("idx", i, "| prev pos", prey_pos, "| isScared", agent.isScared, end=" ")
                   if agent.isScared:
                     # make other agents around you scared 
                     newly_scared = get_agents_within_fear_radius(prey_pos_dict,i)
@@ -360,7 +303,7 @@ def multi_experiment(name,
                     x_diff = epsilon if prey_pos[0]-pred_pos[0]==0 else prey_pos[0]-pred_pos[0]
                     y_diff = epsilon if prey_pos[1]-pred_pos[1]==0 else prey_pos[1]-pred_pos[1]
                     opp_pred_pos = get_pos_from_action(prey_pos,[x_diff, y_diff])
-                    action = get_valid_action(i, opp_pred_pos, prey_pos_dict, pred_pos, prey_step_size * 2)
+                    action = get_valid_action(i, opp_pred_pos, prey_pos_dict, pred_pos, prey_step_size * escape_speed_factor)
                   else:
                     if agent.isInHerd:
                         # try to move with the herd
@@ -368,8 +311,6 @@ def multi_experiment(name,
                     else:
                         # try to move towards the furthest prey from the target 
                         action = get_valid_action(i, get_pos_furthest_prey(prey_pos_dict, pred_pos), prey_pos_dict, pred_pos, prey_step_size)
-             
-                  print("| action", action, end=" ")
 
                   # update isScared
                   next_pos = [prey_pos_dict[i][0] + action[0], prey_pos_dict[i][1] + action[1]]
