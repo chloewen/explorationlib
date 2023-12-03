@@ -233,7 +233,7 @@ def multi_experiment(name,
         try_incrs = [i * math.pi/n for i in range(n)]
         prey_pos = prey_pos_dict[prey_idx]
         epsilon = 10 ** (-17)
-        y_diff = epsilon if target_pos[1]-prey_pos[1]==0 else target_pos[1]-prey_pos[1]
+        y_diff = target_pos[1]-prey_pos[1]
         x_diff = epsilon if target_pos[0]-prey_pos[0]==0 else target_pos[0]-prey_pos[0]
         escape_angle = math.atan(y_diff / x_diff) + math.pi
         for try_incr in try_incrs:
