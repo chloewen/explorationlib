@@ -220,7 +220,6 @@ def multi_experiment(name,
             if max_dist == None or get_dist(pred_pos, prey_pos) > max_dist:
                 max_dist = get_dist(pred_pos, prey_pos)
                 best_prey_pos = prey_pos
-        print("best_prey_pos", best_prey_pos, end=" ")
         return best_prey_pos
     
     # returns True if the prey is within prey_radius of any other prey
@@ -321,7 +320,6 @@ def multi_experiment(name,
                 else:
                   action = agent(state[i])
                 next_state, reward, done, info = env.step(action, i)
-                print("| next pos", next_state[i])
 
                 # update pred_pos, prey_pos_dict
                 next_pos = next_state[i]
