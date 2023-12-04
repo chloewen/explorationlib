@@ -13,7 +13,6 @@ from explorationlib import local_gym
 from explorationlib import agent as agent_gym
 
 
-
 def experiment(name,
                agent,
                env,
@@ -144,6 +143,7 @@ def multi_experiment(name,
     Note: by default the experiment log gets saved to 'name' and this
     function returns None: To return the exp_data, set dump=False.
     """
+    random.seed(seed)
 
     def get_dist(posA, posB):
         return math.sqrt((posA[0]-posB[0])**2 + (posA[1]-posB[1])**2)
