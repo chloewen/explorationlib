@@ -137,7 +137,8 @@ def multi_experiment(name,
                      fear_radius=5,
                      prey_radius=5,
                      pred_radius=10,
-                     escape_speed_factor=1):
+                     escape_speed_factor=1,
+                     obey_herd=True):
     """Run a multi-agent experiment. Targets can also be agents. 
     
     Note: by default the experiment log gets saved to 'name' and this
@@ -292,7 +293,7 @@ def multi_experiment(name,
                   action = agent(state_)
                 elif type(agent).__name__ in ["SwarmPreyGrid"]: 
                   prey_pos = prey_pos_dict[i]
-                  if agent.isScared:
+                  if agent.isScared or not obey_herd:
                     # make other agents around you scared 
                     newly_scared = get_agents_within_fear_radius(prey_pos_dict,i)
                     for scared_agent_idx in newly_scared: 
